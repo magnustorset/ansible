@@ -1,0 +1,10 @@
+- name: Configure DNS using nmcli
+  become: yes
+  nmcli:
+    dns4: 
+    - "{{ nameserver }}"
+    dns4_search: 
+    - "{{ domain }}"
+    state: present
+    type: ethernet
+    conn_name: my-ens192

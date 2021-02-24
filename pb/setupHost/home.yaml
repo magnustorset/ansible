@@ -1,0 +1,80 @@
+---
+- name: Initital set up of home folder
+  hosts: "{{ hostname }}"
+  vars_files: 
+  - ../cloneVM/vars.yaml
+  - ./vars.yaml
+  tasks:
+
+  - name: Copy bashrc
+    tags:
+    - bashrc
+    - bash
+    - home
+    copy:
+      src: /opt/ansible/files/rc/.bashrc
+      dest: "/home/{{ user }}/.bashrc"
+
+  - name: Ensure aliases
+    tags:
+    - bash
+    - bash_aliases
+    - home
+    lineinfile:
+      dest: "/home/{{ user }}/.bash_aliases"
+      line: "{{ item }}"
+      create: yes
+      insertbefore: BOF
+    with_items:
+    - "{{ aliases }}"
+  
+  - name: Copy vimrc
+    tags:
+    - vimrc
+    - home
+    - vim
+    copy:
+      src: /opt/ansible/files/rc/.vimrc
+      dest: "/home/{{ user }}/.vimrc"
+
+  - name: Create vim package dir
+    tags:
+    - vim
+    - home
+    - vimplugins
+    file:
+      path: "/home/{{ user }}/.vim/pack"
+      state: directory
+      owner: "{{ user }}"
+      group: "{{ user }}"
+    when: vim_packages == true
+
+
+  - name: Copy vim packages
+    tags:
+    - vim
+    - home
+    - vimplugins
+    copy:
+      src: /opt/ansible/files/rc/pack
+      dest: "/home/{{ user }}/.vim"
+    register: vim_pkg_installed
+    when: vim_packages == true
+
+  - name: Install vim packages
+    tags:
+    - vim
+    - home
+    - vimplugins
+    shell: | 
+      vim -u NONE -c "helptags  /home/{{ user }}/.vim/pack/vendor/start/indentLine/doc" -c "q"
+    when: (vim_pkg_installed is changed) and (vim_packages == true)
+
+  - name: Copy ssh
+    tags:
+    - ssh
+    - home
+    lineinfile:
+      dest: "/home/{{ user }}/.ssh/authorized_keys"
+      line: "{{ item }}"
+    loop: "{{ lookup('file', '/opt/ansible/files/ssh/authorized_keys').splitlines() }}"

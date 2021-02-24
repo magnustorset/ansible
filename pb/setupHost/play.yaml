@@ -1,0 +1,17 @@
+---
+- hosts: "{{ hostname }}"
+  vars_files:
+  - ./vars.yaml
+  - ../cloneVM/vars.yaml
+
+- name: Update host
+  import_playbook: updatehost.yaml
+  when: update == true
+
+- name: Set up home dir
+  import_playbook: home.yaml
+  when: setup_home == true
+
+- name: Generate SSH
+  import_playbook: ssh.yaml
+  when: backcopy_ssh == true

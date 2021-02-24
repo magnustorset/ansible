@@ -1,0 +1,33 @@
+---
+- name: Generate and add SSH key to authorized keys
+  hosts: "{{ hostname }}"
+  gather_facts: yes
+  vars_files: 
+  - ../cloneVM/vars.yaml
+  - ./vars.yaml
+  tasks:
+
+  - name: Check if key exists
+    stat:
+      path: "/home/{{ user}}/.ssh/id_rsa"
+    register: id_rsa
+
+  - name: Generate ssh keys
+    tags:
+    - ssh
+    - generate_ssh
+    openssh_keypair:
+      path: "/home/{{ user }}/.ssh/id_rsa"
+      force: yes
+      comment: "{{ user }}@{{ ansible_facts['nodename'] }}.{{ ansible_facts['domain'] }}"
+    register: ssh
+    when: id_rsa.stat.exists == False
+
+  - name: Add key to localhosts
+    tags:
+    - generate_ssh
+    lineinfile:
+      path: /opt/ansible/files/ssh/authorized_keys
+      line: "{{ ssh.public_key }} {{ ssh.comment }}"
+    when: ssh is changed
+    delegate_to: 127.0.0.1

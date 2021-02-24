@@ -1,0 +1,33 @@
+---
+- hosts: vcenter
+  vars_files:
+    - vars.yaml
+  tasks:
+  - name: copy key to vcenter
+    copy:
+      src: "{{ certs_path }}/{{ crt_common_name }}.pem"	
+      dest: "/root/certs/privkey.pem"
+
+  - name: copy fullchain to vcenter
+    copy:
+      src: "{{ certs_path }}/{{ crt_common_name }}-fullchain.crt"	
+      dest: "/root/certs/fullchain.crt"
+
+  - name: copy cert to vcenter
+    copy:
+      src: "{{ certs_path }}/{{ crt_common_name }}.crt"	
+      dest: "/root/certs/cert.crt"
+    register: vc_cert
+
+  - name: send email
+    mail:
+      host: smtp.gmail.com
+      port: 587
+      username: magnus.torset@gmail.com
+      password: "{{ gmail_key }}"
+      to: Magnus Torset <magnus.torset@gmail.com>
+      from: Ansible <ansible@torset.me>
+      subject: Certificates for vcenter.torset.me has been renewed
+      body: "The certificates for vcenter.torset.me has been renewed and copied to the host. Please do the manual import on the host. You can follow this guide: https://blog.krogloth.de/vmware-vcenter-vcsa-ssl-certificates-using-lets-encrypt/"
+    delegate_to: localhost
+    when: vc_cert is changed

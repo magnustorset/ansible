@@ -1,0 +1,15 @@
+all:
+  children:
+    esxi:
+      hosts:
+        esxi0.torset.me:
+        esxi1.torset.me:
+        esxi2.torset.me:
+    vcenter:
+      hosts:
+        vcenter.torset.me:
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+    ansible_connection: ssh
+    ansible_user: root
+    ansible_ssh_private_key_file: ~/.ssh/id_rsa

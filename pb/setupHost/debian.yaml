@@ -1,0 +1,35 @@
+- name: Update packages
+  tags:
+  - pkg
+  - pkg_updtate
+  - firsttimesetup
+  become: yes
+  apt:
+    update_cache: true
+    upgrade: safe
+
+- name: Install required packages
+  tags:
+  - pkg
+  - pkg_install
+  - firsttimesetup
+  become: yes
+  apt: 
+    name: "{{ packages }}" 
+    state: latest 
+    update_cache: true
+  vars:
+    packages:
+    - htop
+    - python3
+    - git
+    - vim
+    - wget
+    - curl
+    - rsyslog
+    - netcat
+    - network-manager
+    - python-dbus
+    - python3-dbus
+    - libnm-dev
+    - dbus

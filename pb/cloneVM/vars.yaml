@@ -1,0 +1,6 @@
+vm_ip: 10.0.1.105
+vm_name: dev
+hostname: "{{ vm_name }}.torset.me"
+os: centos8
+vcenter_cluster: "Torset HA"
+network_name: "HA-VM Network"

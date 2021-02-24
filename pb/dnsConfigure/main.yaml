@@ -1,0 +1,24 @@
+---
+- name: Configure DNS on all hosts
+  hosts: all
+  gather_facts: yes
+  tasks:
+
+  - name: Configure DNS using nmcli
+    become: yes
+    nmcli:
+      dns4: 
+      - "{{ nameserver }}"
+      dns4_search: 
+      - "{{ domain }}"
+      conn_name: ens192
+      state: present
+      type: ethernet
+      ifname: "*"
+
+  - name: Restart NetworkManager
+    become: yes
+    service:
+      name: NetworkManager
+      enabled: yes
+      state: restarted

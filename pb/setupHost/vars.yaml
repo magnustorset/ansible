@@ -1,0 +1,19 @@
+user: magnus
+
+# Aliases added to bash_alias
+aliases:
+  - 'alias lla="ls -lA"'
+
+# Tasks
+
+# Update hosts and boot if necessary
+update: true
+
+# Set up home dir with bash and vim rc files and copy authorized hosts
+setup_home: true
+
+# Install vim packages in files/rc/pack
+vim_packages: true
+
+# Generate and add key to Authorized hosts that will be distributed to other machines
+backcopy_ssh: true

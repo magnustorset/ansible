@@ -1,0 +1,46 @@
+  - name: Add CentOS repos
+    become: yes
+    tags:
+    - yum_setup
+    - firsttimesetup
+    - repo_add
+    yum_repository:
+      name: epel
+      description: EPEL YUM repo
+      baseurl: https://download.fedoraproject.org/pub/epel/8/Everything/x86_64/
+
+  - name: Update packages
+    tags:
+    - pkg_update
+    - firsttimesetup
+    - pkg
+    become: yes
+    yum:
+      name: "*"
+      state: latest
+      exclude: kernel*
+
+  - name: install requirements
+    tags:
+    - pkg_install
+    - firsttimesetup
+    - pkg
+    become: yes
+    yum: 
+      name: "{{ packages }}"
+      state: latest 
+      update_cache: true
+      enablerepo: PowerTools
+    vars:
+      packages:
+      - python3
+      - git
+      - vim
+      - wget
+      - curl
+      - rsyslog
+      - nmap-ncat
+      - NetworkManager
+      - NetworkManager-libnm
+      - dbus
+      - policycoreutils-python-utils

@@ -1,0 +1,58 @@
+---
+- name: Create a VM from a template
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  vars_files:
+  - vars.yaml
+  - /opt/ansible/vars/login.yaml
+  tasks:
+  - name: Clone the template
+    tags:
+    - clone
+    vmware_guest:
+      hostname: "{{ vcenter_host }}"
+      username: "{{ vcenter_un }}"
+      password: "{{ vcenter_pw }}"
+      validate_certs: False
+      cluster: "{{ vcenter_cluster }}"
+      name: "{{ vm_name }}"
+      template: "{{ os }}-template"
+      datacenter: Datacenter
+      folder: ansible_deploy
+      state: poweredon
+      networks:
+      - name: "{{ network_name }}"
+        ip: "{{ vm_ip }}"
+        netmask: 255.255.252.0
+        gateway: 10.0.0.1
+      customization:
+        dns_servers: "{{ nameserver }}"
+        domain: torset.me
+        hostname: "{{ vm_name }}"
+      wait_for_ip_address: yes
+      wait_for_customization: yes
+
+  - name: Read inventory
+    tags:
+    - inv
+    lineinfile:
+      dest: "{{ inv_file }}"
+      line: "{{ hostname }}"
+    check_mode: yes
+    register: presence
+
+
+  - name: Add to inventory
+    tags:
+    - inv
+    when: presence.changed
+    lineinfile:
+      path: /opt/ansible/hosts.ini
+      state: present
+      insertafter: "\\[{{ os }}\\]"
+      firstmatch: yes
+      line: "{{ hostname }}"
+
+- name: Configure DNS
+  import_playbook: dns.yaml

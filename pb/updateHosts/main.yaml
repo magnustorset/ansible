@@ -1,0 +1,26 @@
+---
+- name: Update all hosts
+  hosts: all
+  gather_facts: no
+  vars_files:
+  - /opt/ansible/vars/login.yaml
+  tasks:
+
+  - include: template_poweron.yaml
+    when: inventory_hostname=
+
+  - name: Gather facts
+    tags:
+    - always
+    setup:
+
+
+  - include: debian.yaml
+    when: ansible_os_family == 'Debian'
+
+
+  - include: redhat.yaml
+
+
+  - include: template_shutdown.yaml
+

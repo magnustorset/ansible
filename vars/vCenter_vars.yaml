@@ -1,0 +1,4 @@
+vm_ip: 10.0.1.80
+vm_name: dns
+hostname: "{{ vm_name }}.torset.me"
+os: centos8

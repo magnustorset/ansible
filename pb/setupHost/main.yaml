@@ -1,0 +1,119 @@
+---
+- name: Initital set up of hosts
+  hosts: "{{ hostname }}"
+  gather_facts: yes
+  vars_files: 
+  - ../cloneVM/vars.yaml
+  - /opt/ansible/vars/login.yaml
+  - ./vars.yaml
+  tasks:
+
+  - include: debian.yaml
+    when: ansible_os_family == 'Debian'
+
+
+  - include: redhat.yaml
+    when: ansible_os_family == 'RedHat'
+  
+
+  - name: Copy bashrc
+    tags:
+    - bashrc
+    - bash
+    - home
+    copy:
+      src: /opt/ansible/files/rc/.bashrc
+      dest: "/home/{{ user }}/.bashrc"
+
+  - name: Ensure alias file
+    tags:
+    - bash
+    - bash_aliases
+    - home
+    file:
+      path: "/home/{{ user }}/.bash_aliases"
+      state: touch
+
+  - name: Ensure aliases
+    tags:
+    - bash
+    - bash_aliases
+    - home
+    lineinfile:
+      dest: "/home/{{ user }}/.bash_aliases"
+      line: "{{ item }}"
+    with_items:
+    - "{{ aliases }}"
+
+  - name: Copy vimrc
+    tags:
+    - vimrc
+    - home
+    - vim
+    copy:
+      src: /opt/ansible/files/rc/.vimrc
+      dest: "/home/{{ user }}/.vimrc"
+
+  - name: Create vim package dir
+    tags:
+    - vim
+    - home
+    - vimplugins
+    file:
+      path: "/home/{{ user }}/.vim/pack"
+      state: directory
+      owner: "{{ user }}"
+      group: "{{ user }}"
+    when: vim_packages == true
+
+
+  - name: Copy vim packages
+    tags:
+    - vim
+    - home
+    - vimplugins
+    copy:
+      src: /opt/ansible/files/rc/pack
+      dest: "/home/{{ user }}/.vim"
+    register: vim_pkg_installed
+    when: vim_packages == true
+
+  - name: Install vim packages
+    tags:
+    - vim
+    - home
+    - vimplugins
+    shell: | 
+      vim -u NONE -c "helptags  /home/{{ user }}/.vim/pack/vendor/start/indentLine/doc" -c "q"
+    when: (vim_pkg_installed is changed) and (vim_packages == true)
+
+  - name: Copy ssh
+    tags:
+    - ssh
+    - home
+    copy:
+      src: /opt/ansible/files/ssh/authorized_keys
+      dest: "/home/{{ user }}/.ssh/authorized_keys"
+    check_mode: yes
+    diff: yes
+
+  - name: Generate ssh keys
+    tags:
+    - ssh
+    - generate_ssh
+    openssh_keypair:
+      path: "/home/{{ user }}/.ssh/id_rsa"
+      force: yes
+      comment: "{{ user }}@{{ ansible_facts['nodename'] }}.{{ ansible_facts['domain'] }}"
+    register: ssh
+    when: backcopy_ssh == true
+
+  - name: Add key to localhosts
+    tags:
+    - generate_ssh
+    lineinfile:
+      path: /opt/ansible/files/ssh/authorized_keys
+      line: "{{ ssh.public_key }} {{ ssh.comment }}"
+    delegate_to: 127.0.0.1
+    when: backcopy_ssh == true
+

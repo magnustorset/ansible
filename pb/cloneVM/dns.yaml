@@ -1,0 +1,26 @@
+- hosts: dns.torset.me
+  gather_facts: no
+  vars_files:
+  - vars.yaml
+  - /opt/ansible/vars/login.yaml
+  tasks:
+  - name: Add to DNS
+    tags:
+    - dns
+    become: yes
+    blockinfile:
+      path: /etc/unbound/host_entries.conf
+      state: present
+      block: |
+        local-data-ptr: "{{ vm_ip }} {{ hostname }}"
+        local-data: "{{ hostname }}. A {{ vm_ip }}"
+    register: dns
+
+  - name: Restart DNS
+    tags:
+    - dns
+    become: yes
+    systemd:
+      name: unbound
+      state: restarted
+    when: dns is changed
