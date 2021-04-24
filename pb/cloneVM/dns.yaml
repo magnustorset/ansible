@@ -4,6 +4,20 @@
   - vars.yaml
   - /opt/ansible/vars/login.yaml
   tasks:
+
+  - name: Make sure there are no lingering block markers
+    tags:
+    - dns
+    become: yes
+    lineinfile:
+      path: /etc/unbound/host_entries.conf
+      state: absent
+      line: "# {{ item }} ANSIBLE MANAGED BLOCK"
+    loop:
+      - "BEGIN"
+      - "END"
+
+
   - name: Add to DNS
     tags:
     - dns
@@ -15,6 +29,19 @@
         local-data-ptr: "{{ vm_ip }} {{ hostname }}"
         local-data: "{{ hostname }}. A {{ vm_ip }}"
     register: dns
+
+  - name: Remove blockinfile markers
+    tags:
+    - dns
+    become: yes
+    lineinfile:
+      path: /etc/unbound/host_entries.conf
+      state: absent
+      line: "# {{ item }} ANSIBLE MANAGED BLOCK"
+    loop:
+      - "BEGIN"
+      - "END"
+
 
   - name: Restart DNS
     tags:

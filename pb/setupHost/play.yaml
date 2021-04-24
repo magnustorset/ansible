@@ -1,5 +1,5 @@
 ---
-- hosts: "{{ hostname }}"
+- hosts: all
   vars_files:
   - ./vars.yaml
   - ../cloneVM/vars.yaml

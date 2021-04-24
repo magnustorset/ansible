@@ -13,7 +13,7 @@ update: true
 setup_home: true
 
 # Install vim packages in files/rc/pack
-vim_packages: true
+vim_packages: false
 
 # Generate and add key to Authorized hosts that will be distributed to other machines
 backcopy_ssh: true

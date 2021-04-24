@@ -1,0 +1,2 @@
+r_telegraf_centos8_repo: "https://repos.influxdata.com/rhel/8/x86_64/stable/"
+r_telegraf_influx_server: http://monitor.torset.me:8086

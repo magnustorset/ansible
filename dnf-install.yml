@@ -1,0 +1,9 @@
+---
+- hosts: all
+  vars_files:
+  - /opt/ansible/vars/login.yaml
+  vars:
+    packages:
+      - cifs-utils
+  roles:
+  - dnf-install

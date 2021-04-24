@@ -1,6 +1,6 @@
 ---
 - name: Update host
-  hosts: "{{ hostname }}"
+  hosts: all
   gather_facts: yes
   vars_files: 
   - ../cloneVM/vars.yaml

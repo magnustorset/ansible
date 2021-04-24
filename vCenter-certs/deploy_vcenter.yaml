@@ -2,6 +2,7 @@
 - hosts: vcenter
   vars_files:
     - vars.yaml
+    - /opt/ansible/vars/login.yaml
   tasks:
   - name: copy key to vcenter
     copy:

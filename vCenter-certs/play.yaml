@@ -1,5 +1,7 @@
 ---
+# NB: Vars may be broken
+#
 - import_playbook: ssl.yaml
-- import_playbook: deploy_esxi.yaml
 - import_playbook: deploy_vcenter.yaml
+- import_playbook: deploy_esxi.yaml
 

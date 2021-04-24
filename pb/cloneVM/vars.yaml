@@ -1,5 +1,5 @@
-vm_ip: 10.0.1.105
-vm_name: dev
+vm_ip: 10.0.1.110
+vm_name: monitor
 hostname: "{{ vm_name }}.torset.me"
 os: centos8
 vcenter_cluster: "Torset HA"

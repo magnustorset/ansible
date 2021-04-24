@@ -1,6 +1,6 @@
 ---
 - name: Initital set up of home folder
-  hosts: "{{ hostname }}"
+  hosts: all
   vars_files: 
   - ../cloneVM/vars.yaml
   - ./vars.yaml
