@@ -22,12 +22,3 @@
       comment: "{{ user }}@{{ ansible_facts['nodename'] }}.{{ ansible_facts['domain'] }}"
     register: ssh
     when: id_rsa.stat.exists == False
-
-  - name: Add key to localhosts
-    tags:
-    - generate_ssh
-    lineinfile:
-      path: /opt/ansible/files/ssh/authorized_keys
-      line: "{{ ssh.public_key }} {{ ssh.comment }}"
-    when: ssh is changed
-    delegate_to: 127.0.0.1

@@ -2,3 +2,4 @@
 *authorized_keys
 inv.vmware.yaml
 vCenter-certs/vars.yaml
+certs/*
