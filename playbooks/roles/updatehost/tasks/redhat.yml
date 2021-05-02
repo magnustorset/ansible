@@ -1,0 +1,23 @@
+- name: Update CentOS packages
+  tags:
+  - pkg_update
+  - pkg
+  become: yes
+  dnf:
+      name: "*"
+      state: latest
+
+
+- name: Check for CentOS reboot hint
+  shell: LAST_KERNEL=$(rpm -q --last kernel | awk 'NR==1{sub(/kernel-/,""); print $1}'); CURRENT_KERNEL=$(uname -r); if [ $LAST_KERNEL != $CURRENT_KERNEL ]; then echo 'reboot'; else echo 'no'; fi
+  ignore_errors: true
+  register: centos_reboot_hint
+  when: ansible_os_family == "RedHat"
+
+
+- name: Reboot hosts
+  become: yes
+  reboot:
+    connect_timeout: 60
+  when: (ansible_os_family == 'RedHat') and (centos_reboot_hint.stdout.find("reboot") != -1)
+  register: rebooting

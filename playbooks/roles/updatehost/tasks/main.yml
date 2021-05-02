@@ -1,0 +1,21 @@
+---
+- include: template_poweron.yml
+  run_once: true
+  when: "'templates' in group_names"
+
+- name: Gather facts
+  tags:
+  - always
+  setup:
+
+
+- include: debian.yml
+  when: ansible_os_family == 'Debian'
+
+
+- include: redhat.yml
+  when: ansible_os_family == 'RedHat'
+
+- include: template_shutdown.yml
+  run_once: true
+  when: "'templates' in group_names"

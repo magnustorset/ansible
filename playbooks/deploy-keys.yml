@@ -1,0 +1,6 @@
+---
+- hosts: all
+  vars_files:
+  - /opt/ansible/vars/login.yaml
+  roles:
+  - deploy-keys

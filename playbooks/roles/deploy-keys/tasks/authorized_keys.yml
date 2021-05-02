@@ -1,0 +1,11 @@
+---
+- name: Copy ssh
+  tags:
+  - ssh
+  - home
+  lineinfile:
+    path: "/home/{{ user }}/.ssh/authorized_keys"
+    line: "{{ item }}"
+    group: "{{ user }}"
+    owner: "{{ user }}"
+  loop: "{{ lookup('file', 'files/authorized_keys').splitlines() }}"

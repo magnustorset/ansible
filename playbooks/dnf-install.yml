@@ -1,0 +1,9 @@
+---
+- hosts: centos
+  vars_files:
+  - /opt/ansible/vars/login.yaml
+  vars:
+    packages:
+      - rxvt-unicode-terminfo
+  roles:
+  - dnf-install

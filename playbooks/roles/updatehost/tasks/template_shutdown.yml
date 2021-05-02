@@ -1,0 +1,67 @@
+- name: Turn off CentOS template VM
+  tags:
+  - template
+  vmware_guest:
+    hostname: "{{ vcenter_host }}"
+    username: "{{ vcenter_un }}"
+    password: "{{ vcenter_pw }}"
+    validate_certs: False
+    name: "centos8-template"
+    datacenter: Datacenter
+    folder: /Templates
+    state: shutdownguest
+  run_once: True
+  delegate_to: localhost
+
+
+- name: Turn off Debian template VM
+  tags:
+  - template
+  vmware_guest:
+    hostname: "{{ vcenter_host }}"
+    username: "{{ vcenter_un }}"
+    password: "{{ vcenter_pw }}"
+    validate_certs: False
+    name: "debian-template"
+    datacenter: Datacenter
+    folder: /Templates
+    state: shutdownguest
+  run_once: True
+  delegate_to: localhost
+
+- name: Wait for shutdown
+  pause: 
+    seconds: 30
+
+- name: Convert CentOS VM to template
+  tags:
+  - template
+  vmware_guest:
+    hostname: "{{ vcenter_host }}"
+    username: "{{ vcenter_un }}"
+    password: "{{ vcenter_pw }}"
+    validate_certs: False
+    name: "centos8-template"
+    datacenter: Datacenter
+    folder: /Templates
+    state: present
+    is_template: True
+  run_once: True
+  delegate_to: localhost
+
+
+- name: Convert Debian VM to template
+  tags:
+  - template
+  vmware_guest:
+    hostname: "{{ vcenter_host }}"
+    username: "{{ vcenter_un }}"
+    password: "{{ vcenter_pw }}"
+    validate_certs: False
+    name: "debian-template"
+    datacenter: Datacenter
+    folder: /Templates
+    state: present
+    is_template: True
+  run_once: True
+  delegate_to: localhost

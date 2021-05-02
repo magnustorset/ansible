@@ -1,0 +1,13 @@
+---
+- name: Import config
+  become: yes
+  template:
+    src: templates/telegraf_baseconf.j2
+    dest: /etc/telegraf/telegraf.conf
+
+- name: Start and enable Telegraf
+  become: yes
+  systemd:
+    name: telegraf
+    state: restarted
+    enabled: yes 

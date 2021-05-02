@@ -1,0 +1,6 @@
+---
+- name: Install dnf package from var
+  become: yes
+  dnf:
+    name: "{{ packages }}"
+    state: latest
